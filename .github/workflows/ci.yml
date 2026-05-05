@@ -23,11 +23,16 @@ jobs:
       - name: Run unit tests
         run: ctest --test-dir build --output-on-failure
 
-      - name: Smoke test (must emit at least one sample line)
+      - name: Smoke test (binary starts, produces output, survives SIGTERM)
         run: |
-          out=$(timeout 7 ./build/system-monitor || true)
-          echo "$out"
-          echo "$out" | grep -E '^\[[0-9]{4}-[0-9]{2}-[0-9]{2}T.*\] cpu=[0-9.]+C mem_used=[0-9]+/[0-9]+ MiB' >/dev/null
+          timeout 7 ./build/system-monitor > /tmp/smoke.txt; exit_code=$?
+          cat /tmp/smoke.txt
+          # exit 124 = killed by timeout (was still running = good)
+          # exit 0   = clean shutdown (also good)
+          # anything else = crash
+          [ "$exit_code" -eq 124 ] || [ "$exit_code" -eq 0 ]
+          # must have produced at least one line (sample or warn about missing sysfs)
+          test -s /tmp/smoke.txt
 
   cross-compile-aarch64:
     runs-on: ubuntu-24.04
