@@ -1,0 +1,7 @@
+build/
+/tmp/
+*.o
+*.obj
+.cache/
+compile_commands.json
+.vscode/
