@@ -1,5 +1,12 @@
 # meta-monitor
 
+![CI](https://github.com/jaimegalanmartinez/meta-monitor/actions/workflows/ci.yml/badge.svg)
+![C++23](https://img.shields.io/badge/C%2B%2B-23-blue.svg)
+![CMake](https://img.shields.io/badge/CMake-3.20+-064F8C.svg?logo=cmake&logoColor=white)
+![Yocto](https://img.shields.io/badge/Yocto-scarthgap_5.0-425980.svg)
+![Platform](https://img.shields.io/badge/Platform-Raspberry_Pi_3B-C51A4A.svg?logo=raspberry-pi&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
+
 A Yocto layer that adds a small **C++20/23 system monitor** service to a
 Raspberry Pi 3B image. Designed to sit on top of
 [yocto-rpi3-setup](https://github.com/jaimegalanmartinez/yocto-rpi3-setup)
