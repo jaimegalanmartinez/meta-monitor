@@ -1,0 +1,18 @@
+[Unit]
+Description=System Monitor (CPU temp + memory)
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/system-monitor
+Restart=on-failure
+RestartSec=5s
+
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadOnlyPaths=/sys /proc
+
+[Install]
+WantedBy=multi-user.target
