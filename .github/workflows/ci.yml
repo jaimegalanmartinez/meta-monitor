@@ -1,0 +1,52 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  host-build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install toolchain
+        run: sudo apt-get update && sudo apt-get install -y g++-13 cmake
+
+      - name: Configure
+        run: cmake -S recipes-monitor/system-monitor/files -B build -DCMAKE_CXX_COMPILER=g++-13
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Run unit tests
+        run: ctest --test-dir build --output-on-failure
+
+      - name: Smoke test (must emit at least one sample line)
+        run: |
+          out=$(timeout 7 ./build/system-monitor || true)
+          echo "$out"
+          echo "$out" | grep -E '^\[[0-9]{4}-[0-9]{2}-[0-9]{2}T.*\] cpu=[0-9.]+C mem_used=[0-9]+/[0-9]+ MiB' >/dev/null
+
+  cross-compile-aarch64:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install cross-compiler
+        run: sudo apt-get update && sudo apt-get install -y g++-13-aarch64-linux-gnu cmake
+
+      - name: Configure (aarch64)
+        run: |
+          cmake -S recipes-monitor/system-monitor/files -B build_arm \
+                -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++-13 \
+                -DCMAKE_SYSTEM_NAME=Linux \
+                -DCMAKE_SYSTEM_PROCESSOR=aarch64
+
+      - name: Build (aarch64)
+        run: cmake --build build_arm --parallel
+
+      - name: Verify binary target architecture
+        run: |
+          file build_arm/system-monitor | grep -i "aarch64\|ARM aarch64"
