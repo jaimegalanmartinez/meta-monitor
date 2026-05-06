@@ -19,27 +19,27 @@ include(GNUInstallDirs)
 install(TARGETS system-monitor RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # ── tests ─────────────────────────────────────────────────────────────────────
-include(FetchContent)
-FetchContent_Declare(
-    doctest
-    GIT_REPOSITORY https://github.com/doctest/doctest.git
-    GIT_TAG        v2.4.11
-)
-FetchContent_MakeAvailable(doctest)
-
-enable_testing()
-
-add_executable(tests
-    tests/test_sampler.cpp
-    tests/test_formatter.cpp
-    src/sampler.cpp
-)
-
-target_include_directories(tests PRIVATE src)
-target_link_libraries(tests PRIVATE doctest::doctest)
-target_compile_options(tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
-
 if(NOT CMAKE_CROSSCOMPILING)
+    include(FetchContent)
+    FetchContent_Declare(
+        doctest
+        GIT_REPOSITORY https://github.com/doctest/doctest.git
+        GIT_TAG        v2.4.11
+    )
+    FetchContent_MakeAvailable(doctest)
+
+    enable_testing()
+
+    add_executable(tests
+        tests/test_sampler.cpp
+        tests/test_formatter.cpp
+        src/sampler.cpp
+    )
+
+    target_include_directories(tests PRIVATE src)
+    target_link_libraries(tests PRIVATE doctest::doctest)
+    target_compile_options(tests PRIVATE -Wall -Wextra -Wpedantic -Werror)
+
     include(${doctest_SOURCE_DIR}/scripts/cmake/doctest.cmake)
     doctest_discover_tests(tests)
 endif()
